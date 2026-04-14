@@ -1,17 +1,12 @@
 [project]
 name = "wvu-ieng-331-m2-18"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-authors = [
-    { name = "Chd00009", email = "Chd00009@mix.wvu.edu" }
-]
 requires-python = ">=3.13"
-dependencies = []
-
-[project.scripts]
-wvu-ieng-331-m2-18 = "wvu_ieng_331_m2_18:main"
-
-[build-system]
-requires = ["uv_build>=0.10.7,<0.11.0"]
-build-backend = "uv_build"
+dependencies = [
+    "duckdb",
+    "polars",
+    "altair",
+    "loguru",
+    "pyarrow",
+    "pandas"
+]

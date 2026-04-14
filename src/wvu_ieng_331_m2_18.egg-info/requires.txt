@@ -1,0 +1,6 @@
+duckdb
+polars
+altair
+loguru
+pyarrow
+pandas
