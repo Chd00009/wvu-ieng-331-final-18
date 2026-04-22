@@ -2,7 +2,7 @@
 
 ## Parameter Flow
 
-Command-line arguments are parsed in the `main()` function inside `pipeline.py` using the `argparse` library. For example, the `--seller-id` parameter is defined and parsed as:
+The `--start-date` and `--end-date` parameters directly affect the ABC classification query by filtering `order_purchase_timestamp` in `abc_classification.sql` using parameterized SQL conditions ($1 and $2). These values are passed from `pipeline.py` into `queries.py`, where they are bound to the DuckDB query execution. This ensures that the dataset can be dynamically filtered at runtime without modifying SQL logic.
 
 ```python
 parser.add_argument("--seller-id", default=None)
