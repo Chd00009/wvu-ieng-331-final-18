@@ -1,1 +1,1 @@
-def main() -> None:
+# package init

@@ -4,18 +4,21 @@ import duckdb
 
 def validate_database(db_path: str) -> bool:
     """
-    Runs validation checks on the DuckDB database.
-
-    Args:
-        db_path: Path to DuckDB database file
-
-    Returns:
-        True if valid, False otherwise
+    Validates that the DuckDB database exists and contains required tables.
+    Returns True if valid, False otherwise.
     """
+
+    logger.info("Running validation checks...")
+
     try:
         conn = duckdb.connect(db_path)
+    except (FileNotFoundError, OSError, duckdb.Error) as e:
+        logger.error(f"Validation failed: {e}")
+        return False
 
-        logger.info("Running validation checks...")
+    try:
+        tables = conn.execute("SHOW TABLES").fetchall()
+        table_names = {t[0] for t in tables}
 
         required_tables = {
             "orders",
@@ -26,15 +29,8 @@ def validate_database(db_path: str) -> bool:
             "geolocation",
             "order_payments",
             "order_reviews",
-            "category_translation"
+            "category_translation",
         }
-
-        tables = conn.execute("""
-            SELECT table_name
-            FROM information_schema.tables
-        """).fetchall()
-
-        table_names = {t[0] for t in tables}
 
         missing = required_tables - table_names
 
@@ -43,11 +39,15 @@ def validate_database(db_path: str) -> bool:
             return False
 
         logger.info("All required tables exist")
-        logger.info("Dataset schema validated. Holdout-safe (no fixed row count assumptions).")
+        logger.info(
+            "Dataset schema validated. Holdout-safe (no fixed row count assumptions)."
+        )
 
-        conn.close()
         return True
 
-except (FileNotFoundError, OSError, duckdb.Error) as e:
-        logger.error(f"Validation failed: {e}")
+    except duckdb.Error as e:
+        logger.error(f"Validation query failed: {e}")
         return False
+
+    finally:
+        conn.close()
