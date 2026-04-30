@@ -1,73 +1,98 @@
-# Milestone 2: Python Pipeline
+# Final Deliverable: Data Pipeline & Analytical Report
 
 **Team 18**: Christopher D'Antonio
 
+---
+
+## Overview
+
+This project implements a complete end-to-end data pipeline for the Olist e-commerce dataset. The system performs data validation, transformation, analysis, and generates a final stakeholder-ready report.
+
+The pipeline is fully automated and produces both intermediate data products and a final self-contained HTML report designed for non-technical users.
+
+---
+
 ## How to Run
 
-Instructions to run the pipeline from a fresh clone:
+From a fresh clone of the repository:
 
 ```bash
-git clone https://github.com/Chd00009/WVU-IENG-331-M2-18.git
-cd WVU-IENG-331-M2-18
+git clone https://github.com/Chd00009/wvu-ieng-331-final-18.git
+cd wvu-ieng-331-final-18
 uv sync
-# place olist.duckdb in the data/ directory
-uv run wvu-ieng-331-m2-18
-uv run wvu-ieng-331-m2-18 --start-date 2026-01-01 --seller-id <SELLER_ID>
+uv run python -m src.wvu_ieng_331_final_18.pipeline
 ```
-
-## Parameters
-
-| Parameter      | Type   | Default          | Description                                      |
-| -------------- | ------ | ---------------- | ------------------------------------------------ |
-| `--db-path`    | string | required         | Path to the DuckDB database file                 |
-| `--start-date` | date   | None (no filter) | Filters results to include data after this date  |
-| `--end-date`   | date   | None (no filter) | Filters results to include data before this date |
-| `--seller-id`  | string | None (no filter) | Filters results for a specific seller            |
+---
 
 ## Outputs
 
-The pipeline generates three output files in the output/ directory:
+The pipeline generates the following files in the `output/` directory:
 
-summary.csv
-Contains aggregated results based on the ABC classification query. This file provides a high-level summary of performance.
-detail.parquet
-Contains the full dataset returned by the ABC classification query. This is a detailed dataset suitable for further analysis.
-chart.html
-An interactive Altair visualization saved as a self-contained HTML file. This provides a quick visual overview of the results.
+### summary.csv
+Aggregated results from the ABC classification analysis, providing a high-level summary of business performance.
 
-## Validation Checks
+### detail.parquet
+Full detailed dataset used for deeper analysis and reproducibility.
 
-Before running any analysis, the pipeline performs the following validation checks:
+### chart.html
+Interactive exploratory visualization generated from the dataset.
 
-Verifies that all required tables exist:
-orders
-order_items
-customers
-products
-sellers
-geolocation
-order_payments
-order_reviews
-category_translation
-Logs a warning and stops execution if any required table is missing.
-Logs confirmation that the dataset schema is valid and that the pipeline is holdout-safe (no assumptions about row counts or date ranges).
+### report.html (Final Deliverable)
+A self-contained HTML report that includes:
+- Key business insights
+- Three required visualizations
+- Narrative interpretation of results
 
-If validation fails, the pipeline stops and logs an error message.
+This file can be opened directly in any web browser without requiring Python or additional dependencies.
 
-## Analysis Summary
+## Visualizations
 
-The pipeline performs an ABC classification analysis on the dataset. This categorizes items based on their contribution to overall performance:
+The final report includes three distinct analytical visualizations:
 
-A-class items: Highest contribution to total value
-B-class items: Moderate contribution
-C-class items: Lowest contribution
+1. Time Series Analysis
+ - Shows how business activity changes over time
+ - Used to identify trends and potential seasonality
+2. Category Comparison
+ - Highlights differences across product or category groups
+ - Identifies dominant segments
+3. Distribution Analysis
+ - Shows spread and clustering of key metrics
+ - Helps identify outliers and typical behavior patterns
 
-This analysis helps identify which products or sellers drive the majority of value, supporting prioritization and decision-making.
+## Pipeline Validation
 
-## Limitations & Caveats
+Before execution, the pipeline validates:
 
-The pipeline assumes the database schema matches the expected Olist dataset structure.
-Filtering parameters (--start-date, --end-date, --seller-id) are included but may not fully affect all queries depending on SQL implementation.
-The visualization is a simple exploratory chart and not a full analytical dashboard.
-No advanced error recovery is implemented; failures will stop execution.
-The pipeline does not handle corrupted or invalid database files beyond basic validation.
+ - Presence of all required tables (orders, order_items, customers, products, sellers, geolocation, payments, reviews, category_translation)
+ - Schema consistency and dataset integrity
+ - Holdout-safe assumptions (no reliance on fixed row counts or date ranges)
+
+If validation fails, execution stops immediately.
+
+## Analytical Summary
+
+The pipeline performs an ABC classification analysis to segment data based on contribution to overall value:
+
+ - A-class items: High-impact contributors
+ - B-class items: Moderate contributors
+ - C-class items: Low-impact contributors
+
+This segmentation helps identify key drivers of business performance and areas for optimization.
+
+## Design Choice
+
+An HTML-based report was selected as the final deliverable because it:
+
+ - Is fully self-contained
+ - Requires no installation or dependencies to view
+ - Can be opened in any browser
+ - Combines narrative and visualizations in a single file
+
+This makes it suitable for direct stakeholder communication.
+
+## Limitations
+
+ - The pipeline assumes a consistent Olist dataset schema.
+ - Filtering parameters exist but may not affect all queries depending on implementation.
+ - The report is descriptive rather than predictive or causal.
+ - No automated recovery from corrupted or missing data files.
