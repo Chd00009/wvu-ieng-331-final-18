@@ -1,3 +1,56 @@
+# System Design: Data Pipeline and Reporting Layer
+
+## Overview
+
+This project extends the Milestone 2 pipeline into a complete data product by adding a reporting layer that delivers insights to non-technical stakeholders.
+
+The system transforms raw data from a DuckDB database into structured outputs and a final self-contained HTML report. The pipeline is fully automated and reproducible, requiring only a single command to regenerate all outputs.
+
+---
+
+## Architecture
+
+The system is organized into modular components:
+
+- **Data Source Layer**
+  - DuckDB database (`olist.duckdb`)
+
+- **Validation Layer (`validation.py`)**
+  - Ensures required tables exist
+  - Prevents execution on invalid datasets
+
+- **Data Access Layer (`queries.py`)**
+  - Executes parameterized SQL queries
+  - Encapsulates data retrieval logic
+
+- **Pipeline Orchestration (`pipeline.py`)**
+  - Coordinates validation, querying, and output generation
+  - Produces intermediate outputs (CSV, Parquet, chart)
+
+- **Reporting Layer (`report.py`)**
+  - Generates the final HTML report
+  - Combines visualizations with narrative explanations
+
+---
+
+## Data Flow
+
+The pipeline executes in the following sequence:
+
+1. Validate database schema
+2. Execute SQL queries
+3. Generate intermediate outputs:
+   - `summary.csv`
+   - `detail.parquet`
+   - `chart.html`
+4. Pass results into reporting module
+5. Generate final deliverable:
+   - `report.html`
+
+This ensures a fully reproducible workflow from raw data to stakeholder-facing insights.
+
+---
+
 # Design Rationale
 
 ## Parameter Flow
@@ -79,3 +132,21 @@ To add a third output format (such as JSON), I would modify the output section o
 df_abc.write_json("output/data.json")
 
 This would be added alongside the existing CSV and Parquet outputs. Because the pipeline separates data processing from output generation, adding new formats is straightforward.
+
+## Reporting Layer Design
+
+The reporting layer is implemented in `report.py` and is responsible for transforming analytical outputs into a stakeholder-friendly format.
+
+The report is generated as a self-contained HTML file that includes:
+- Multiple visualizations
+- Titles and labeled axes
+- Narrative explanations of each chart
+
+This design ensures that:
+- The report can be opened in any browser
+- No Python environment is required for viewing
+- Insights are clearly communicated without technical knowledge
+
+The reporting layer reads from the pipeline outputs rather than recomputing data, maintaining separation between computation and presentation.
+
+---
