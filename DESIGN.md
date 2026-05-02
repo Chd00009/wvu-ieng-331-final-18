@@ -51,11 +51,13 @@ This ensures a fully reproducible workflow from raw data to stakeholder-facing i
 
 ---
 
-# Design Rationale
+## Design Rationale
 
 ## Parameter Flow
 
-The `--start-date` and `--end-date` parameters directly affect the ABC classification query by filtering `order_purchase_timestamp` in `abc_classification.sql` using parameterized SQL conditions ($1 and $2). These values are passed from `pipeline.py` into `queries.py`, where they are bound to the DuckDB query execution. This ensures that the dataset can be dynamically filtered at runtime without modifying SQL logic.
+Command-line parameters (`--start-date`, `--end-date`, `--seller-id`) are parsed in `pipeline.py` and passed into the query layer.
+
+These parameters are bound to SQL queries using DuckDB parameter substitution, ensuring that filtering is dynamic and safe without modifying SQL logic.
 
 ```python
 parser.add_argument("--seller-id", default=None)
@@ -70,35 +72,44 @@ This design allows command-line inputs to directly influence the database query 
 
 ## SQL Parameterization
 
-An example SQL file is seller_scorecard.sql, which contains a query using parameter placeholders:
+SQL queries in this project use parameterized placeholders (e.g., `$1`) to safely inject runtime values into database queries without modifying the SQL structure.
+
+For example, a query such as:
+
+```sql
 SELECT *
 FROM sellers
 WHERE seller_id = $1;
-The $1 represents a parameter that will be replaced at runtime.
+```
 
 In queries.py, the SQL file is read using pathlib, and then executed like this:
+```python
 conn.execute(sql, [seller_id])
+```
 The value of seller_id is passed safely into the query.
 
-Parameterized queries are used instead of f-strings or string concatenation because they prevent SQL injection and ensure that user input does not alter the structure of the query.
+This approach ensures that user-provided values are passed as data rather than being concatenated into the SQL string.
 
-SQL is stored in .sql files instead of inside Python code to improve organization and maintainability. This keeps query logic separate from application logic and makes it easier to update queries without modifying Python functions.
+Using parameterized queries provides two key benefits:
+- Security: Prevents SQL injection by separating query structure from input values.
+- Maintainability: Keeps SQL logic static in .sql files while allowing dynamic filtering at runtime.
+
+All SQL queries are stored in external .sql files rather than embedded in Python code. This separation improves readability and makes query logic easier to update without changing application code.
 
 ## Validation Logic
 
 Validation is implemented in the validate_database() function in validation.py.
 
 The main validation step checks that all required tables exist in the database. These include:
-
-orders
-order_items
-customers
-products
-sellers
-geolocation
-order_payments
-order_reviews
-category_translation
+- orders  
+- order_items  
+- customers  
+- products  
+- sellers  
+- geolocation  
+- order_payments  
+- order_reviews  
+- category_translation 
 
 This check is important because all queries depend on these tables. If any are missing, the pipeline would fail during execution.
 
@@ -147,6 +158,6 @@ This design ensures that:
 - No Python environment is required for viewing
 - Insights are clearly communicated without technical knowledge
 
-The reporting layer reads from the pipeline outputs rather than recomputing data, maintaining separation between computation and presentation.
+The reporting layer reads from the pipeline outputs rather than recomputing data, maintaining separation between computation and presentation. This ensures a strict separation between computation (pipeline) and presentation (reporting), improving modularity and maintainability.
 
 ---

@@ -20,6 +20,8 @@ From a fresh clone of the repository:
 git clone https://github.com/Chd00009/wvu-ieng-331-final-18.git
 cd wvu-ieng-331-final-18
 uv sync
+
+# Run full pipeline (generates all outputs + final report)
 uv run python -m src.wvu_ieng_331_final_18.pipeline
 ```
 ---
@@ -49,15 +51,14 @@ This file can be opened directly in any web browser without requiring Python or 
 
 The final report includes three distinct analytical visualizations:
 
-1. Time Series Analysis
- - Shows how business activity changes over time
- - Used to identify trends and potential seasonality
-2. Category Comparison
- - Highlights differences across product or category groups
- - Identifies dominant segments
-3. Distribution Analysis
- - Shows spread and clustering of key metrics
- - Helps identify outliers and typical behavior patterns
+### 1. Time Series
+> Shows how revenue activity evolves over time, highlighting potential shifts in demand patterns and variability in purchasing behavior.
+
+### 2. Category Comparison
+> Compares product performance across ABC classes, showing strong concentration in A-class items.
+
+### 3. Distribution
+> Reveals heavy right-skew in revenue, indicating that most products contribute low value while a small number dominate revenue.
 
 ## Pipeline Validation
 
@@ -77,7 +78,7 @@ The pipeline performs an ABC classification analysis to segment data based on co
  - B-class items: Moderate contributors
  - C-class items: Low-impact contributors
 
-This segmentation helps identify key drivers of business performance and areas for optimization.
+This segmentation enables prioritization of high-value products and supports data-driven decisions around inventory, marketing, and product strategy.
 
 ## Design Choice
 
